@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Турнірна сітка</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .round-title { font-weight: bold; margin-top: 30px; text-align: center; font-size: 1.2em; }
+        .bracket { display: flex; flex-direction: column; gap: 15px; max-width: 700px; margin: auto; }
+        .match { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; border: 1px solid #ccc; border-radius: 6px; padding: 8px; }
+        .player { width: 35%; }
+        button { padding: 4px 10px; margin: 0 3px; }
+        select { margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Турнірна сітка</h1>
+
+    <form method="get">
+        <label for="tatami">Татамі:</label>
+        <select name="tatami" onchange="this.form.submit()">
+            {% for tatami in all_tatamis %}
+                <option value="{{ tatami }}" {% if tatami == selected_tatami %}selected{% endif %}>{{ tatami }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="category">Категорія:</label>
+        <select name="category" onchange="this.form.submit()">
+            {% for cat in all_categories %}
+                <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if all_brackets %}
+        {% for round in all_brackets %}
+            <div class="round-title">
+                Раунд {{ round.round }}
+            </div>
+            <form method="post">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <input type="hidden" name="tatami" value="{{ selected_tatami }}">
+                <input type="hidden" name="round" value="{{ round.round }}">
+                <div class="bracket">
+                    {% for match in round.matches %}
+                        <div class="match">
+                            <div class="player">{{ match.player1 }}</div>
+                            <div class="player">{{ match.player2 }}</div>
+                            <div>
+                                {% if not match.winner and match.player1_id and match.player2_id %}
+                                    <button name="winner" value="{{ match.player1_id }}">✅ {{ match.player1 }}</button>
+                                    <button name="winner" value="{{ match.player2_id }}">✅ {{ match.player2 }}</button>
+                                {% elif match.winner %}
+                                    <strong>🏅 {{ match.winner }}</strong>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        {% endfor %}
+    {% else %}
+        <p>Немає сітки для вибраної категорії "{{ selected_category }}"</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('index') }}">← На головну</a></p>
+</body>
+</html>

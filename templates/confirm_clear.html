@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Очистити сітку</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Очистити всі раунди?</h1>
+    <form method="post">
+        <button type="submit">Очистити</button>
+        <a href="{{ url_for('index') }}">Скасувати</a>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Оцінювання</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .active { font-weight: bold; background-color: #cce5ff; padding: 3px 6px; border-radius: 4px; }
+        .scored { color: green; }
+        .navigation { margin-top: 20px; }
+        .navigation a { margin-right: 10px; font-weight: bold; }
+        ul { list-style: none; padding-left: 0; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Оцінювання спортсменів</h1>
+
+    {% if not selected_category %}
+    <form method="get" id="filter-form">
+        <label for="tatami">Оберіть татамі:</label>
+        <select name="tatami" onchange="document.getElementById('filter-form').submit()" required>
+            <option value="">-- Виберіть --</option>
+            {% for t in tatami_list %}
+                <option value="{{ t }}" {% if selected_tatami == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
+
+        {% if selected_tatami %}
+            <br><br>
+            <label for="category">Оберіть категорію:</label>
+            <select name="category" required>
+                <option value="">-- Виберіть --</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.value }}" {% if selected_category == cat.value %}selected{% endif %}>
+                        {{ cat.label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>
+                <input type="checkbox" name="only_unscored" {% if only_unscored %}checked{% endif %}>
+                Тільки неоцінені
+            </label>
+
+            <button type="submit">Показати спортсменів</button>
+        {% endif %}
+    </form>
+    {% else %}
+        <h2>
+            Категорія: {{ selected_category }} | Татамі: {{ selected_tatami }} —
+            ✅ {{ total - unscored_count }}/{{ total }} | ⏳ Залишилось: {{ unscored_count }}
+        </h2>
+
+        <ul>
+            {% for sp in athlete_list %}
+                <li>
+                    <a href="{{ url_for('evaluate') }}?tatami={{ selected_tatami }}&category={{ selected_category }}&athlete_id={{ sp.id }}{% if only_unscored %}&only_unscored=1{% endif %}"
+                       class="{% if sp.id == athlete.id %}active{% endif %}">
+                        {% if sp.scored %}✅{% endif %} {{ sp.name }} ({{ sp.coach }})
+                        {% if sp.average %} — <span class="scored">{{ sp.average }}</span>{% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if athlete %}
+            <hr>
+            <h3>Оцінювання: {{ athlete.name }} ({{ athlete.coach }})</h3>
+            <form method="post">
+                {% for i in range(1,6) %}
+                    <input type="number" name="s{{ i }}" step="0.01" min="0" max="10"
+                        value="{{ athlete_scores[i-1] if athlete_scores else '' }}" placeholder="Оцінка {{ i }}" required><br>
+                {% endfor %}
+                <input type="hidden" name="athlete_id" value="{{ athlete.id }}">
+                <input type="hidden" name="edit_mode" value="{{ '1' if athlete_scores else '0' }}">
+                <input type="hidden" name="tatami" value="{{ selected_tatami }}">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                {% if only_unscored %}
+                    <input type="hidden" name="only_unscored" value="1">
+                {% endif %}
+                <button type="submit">{{ 'Оновити' if athlete_scores else 'Зберегти' }} оцінки</button>
+            </form>
+
+            <div class="navigation">
+                {% if previous_id %}
+                    <a href="{{ url_for('evaluate') }}?tatami={{ selected_tatami }}&category={{ selected_category }}&athlete_id={{ previous_id }}{% if only_unscored %}&only_unscored=1{% endif %}">← Попередній</a>
+                {% endif %}
+                {% if next_id %}
+                    <a href="{{ url_for('evaluate') }}?tatami={{ selected_tatami }}&category={{ selected_category }}&athlete_id={{ next_id }}{% if only_unscored %}&only_unscored=1{% endif %}">Наступний →</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <p><a href="{{ url_for('index') }}">← На головну</a></p>
+</div>
+</body>
+</html>

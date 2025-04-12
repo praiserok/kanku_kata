@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Результати</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Результати змагань</h1>
+        {% for category, data in results.items() %}
+            <h2>Категорія: {{ category }}</h2>
+            <table>
+                <tr>
+                    <th>Імʼя</th>
+                    <th>Тренер</th>
+                    <th>Оцінки</th>
+                    <th>Середній бал</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.coach }}</td>
+                    <td>{{ item.scores|join(', ') }}</td>
+                    <td><strong>{{ item.average }}</strong></td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+        <p><a href="{{ url_for('index') }}">← На головну</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Турнірна сітка: Раунд</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Раунд {{ round_name }}</h1>
+    <form method="post">
+        {% for i, match in enumerate(matches) %}
+            <div style="margin-bottom: 20px;">
+                <strong>Пара {{ i+1 }}:</strong><br>
+                {% for idx, p in enumerate(match) %}
+                    <label>
+                        <input type="radio" name="winner_{{ i }}" value="{{ idx }}" required>
+                        {{ p.name }} ({{ p.average }})
+                    </label><br>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <input type="hidden" name="round" value="{{ round_id }}">
+        <button type="submit">Зберегти переможців</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">← На головну</a></p>
+</div>
+</body>
+</html>

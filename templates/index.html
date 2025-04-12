@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanku Kata</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .menu {
+            background: #007BFF;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            background: #0056b3;
+            border-radius: 6px;
+        }
+        .menu a:hover {
+            background: #003d80;
+        }
+    </style>
+</head>
+<body>
+    <h1>Система змагань "Kanku Kata"</h1>
+
+    <div class="menu">
+        <a href="{{ url_for('index') }}">🏠 Головна</a>
+        <a href="{{ url_for('results') }}">📊 Результати</a>
+        <a href="{{ url_for('evaluate') }}">📝 Оцінювання</a>
+        <a href="{{ url_for('bracket') }}">🏆 Сітка</a>
+        <a href="{{ url_for('bracket_round') }}">🎯 Провести раунд</a>
+        <a href="{{ url_for('winners') }}">🥇 Переможці</a>
+        <a href="{{ url_for('clear') }}">🧹 Очистити</a>
+        <a href="{{ url_for('clear_categories') }}">🗑️ Очистити категорії</a>
+    </div>
+
+    <div class="container">
+        <h2>Додати спортсмена</h2>
+        <form action="/add_athlete" method="post">
+            <input type="text" name="name" placeholder="Ім'я" required>
+            <input type="text" name="category" placeholder="Категорія" required>
+            <input type="text" name="coach" placeholder="Тренер" required>
+            <button type="submit">Додати</button>
+        </form>
+
+        <h2>Імпорт з Excel</h2>
+        <form action="/import_excel" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx" required>
+            <button type="submit">Імпортувати спортсменів</button>
+        </form>
+
+        <h2>Список спортсменів</h2>
+        {% for category, athletes in grouped.items() %}
+            <h3>Категорія: {{ category }}</h3>
+            <ul>
+            {% for a in athletes %}
+                <li>{{ a.name }} ({{ a.coach }}) — <a href="/score/{{ a.id }}">Оцінити</a></li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Переможці</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Підсумкові місця</h1>
+    {% if winners %}
+        <ol>
+        {% for i, w in enumerate(winners) %}
+            <li><strong>{{ i+1 }} місце:</strong> {{ w.name }} ({{ w.average }})</li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>Ще не завершено всі раунди.</p>
+    {% endif %}
+    <p><a href="{{ url_for('index') }}">← На головну</a></p>
+</div>
+</body>
+</html>
